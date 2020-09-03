@@ -17,7 +17,10 @@
                 return {a:{a:{a:1}}}
             }
         });
-        console.log(vm._data)
+        //默认弄个数据会递归，去用defineProperty进行拦截  性能差  ->proxy
+        vm._data.a={b:1};
+        vm._data.a.b=100;
+        // console.log(vm._data.a.a.a)
     </script>
 </body>
 </html>

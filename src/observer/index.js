@@ -12,20 +12,24 @@ class Observer{
     }
 }
 function defineReactive(data,key,value){
+    observer(value)   //如果值是对象类型在进行观测
     Object.defineProperty(data,key,{
         get(){
-            console.log('用户获取值了')
+            // console.log('用户获取值了',data,key,value);
             return value
         },
         set(newValue){
-            console.log('用户设定值了')
+            // console.log('用户设定值了',data,key,value)
             if(newValue==value) return;
+            observer(newValue)  //如果用户将值改为对象继续监控
             value = newValue
         }
     })
 }
 export function observer(data) {
-    if(typeof data !== 'object' && data !== null){
+    //typeof null 也是对象
+    // 不能不是对象 并且不是null才能监控
+    if(typeof data !== 'object' || data == null){
         return;
     }
     // console.log(data)

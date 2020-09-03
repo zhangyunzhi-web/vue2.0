@@ -32,9 +32,9 @@ function initMethods() {}
 
 function initData(vm) { //数据的初始化操作
     let data = vm.$options.data
-    console.log(data);
+    // console.log(data);
     vm._data = data = typeof data == 'function' ? data.call(vm) : data
-    console.log(data)
+    // console.log(data)
 
     //数据的劫持方案 对象Object.defineProperty defineProperty可以重新定义get和set方法
     //数组  单独处理的 

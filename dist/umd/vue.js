@@ -65,21 +65,27 @@
   }();
 
   function defineReactive(data, key, value) {
+    observer(value); //如果值是对象类型在进行观测
+
     Object.defineProperty(data, key, {
       get: function get() {
-        console.log('用户获取值了');
+        // console.log('用户获取值了',data,key,value);
         return value;
       },
       set: function set(newValue) {
-        console.log('用户设定值了');
+        // console.log('用户设定值了',data,key,value)
         if (newValue == value) return;
+        observer(newValue); //如果用户将值改为对象继续监控
+
         value = newValue;
       }
     });
   }
 
   function observer(data) {
-    if (_typeof(data) !== 'object' && data !== null) {
+    //typeof null 也是对象
+    // 不能不是对象 并且不是null才能监控
+    if (_typeof(data) !== 'object' || data == null) {
       return;
     } // console.log(data)
 
@@ -108,10 +114,10 @@
 
   function initData(vm) {
     //数据的初始化操作
-    var data = vm.$options.data;
-    console.log(data);
-    vm._data = data = typeof data == 'function' ? data.call(vm) : data;
-    console.log(data); //数据的劫持方案 对象Object.defineProperty defineProperty可以重新定义get和set方法
+    var data = vm.$options.data; // console.log(data);
+
+    vm._data = data = typeof data == 'function' ? data.call(vm) : data; // console.log(data)
+    //数据的劫持方案 对象Object.defineProperty defineProperty可以重新定义get和set方法
     //数组  单独处理的 
 
     observer(data);
