@@ -42,12 +42,33 @@
     return Constructor;
   }
 
+  // 拿到数组原型上原有的方法
+  var oldArrayProtoMethods = Array.prototype; // 继承一下   array.__proto__ = oldArrayProtoMethods
+
+  var arrayMethods = Object.create(oldArrayProtoMethods);
+  var methods = ['push', 'pop', 'shift', 'unshift', 'splice', 'reverse', 'sort'];
+  methods.forEach(function (methods) {
+    arrayMethods[methods] = function () {
+      console.log('数组方法被调用了');
+      var result = oldArrayProtoMethods[methods].apply(this, arguments);
+      return result;
+    };
+  }); // arrayMethods.concat = function (){    // 没有重写的你可以沿着原型链找，他还是原来的
+  // }
+
   var Observer = /*#__PURE__*/function () {
     function Observer(value) {
       _classCallCheck(this, Observer);
 
       //使用defineProperty 重新定义属性
-      this.walk(value);
+      // console.log(value);
+      if (Array.isArray(value)) {
+        // 我希望调用 pop shift unshift push reverse sort splice 时，先做自己想做的事，再进行调用
+        // 函数劫持、切片编程
+        value.__proto__ = arrayMethods;
+      } else {
+        this.walk(value);
+      }
     }
 
     _createClass(Observer, [{
@@ -70,10 +91,12 @@
     Object.defineProperty(data, key, {
       get: function get() {
         // console.log('用户获取值了',data,key,value);
+        console.log('取值');
         return value;
       },
       set: function set(newValue) {
-        // console.log('用户设定值了',data,key,value)
+        console.log('设置值'); // console.log('用户设定值了',data,key,value)
+
         if (newValue == value) return;
         observer(newValue); //如果用户将值改为对象继续监控
 

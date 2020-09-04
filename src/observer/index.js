@@ -1,8 +1,17 @@
+import { arrayMethods } from "./array";
 
 class Observer{
     constructor(value){
         //使用defineProperty 重新定义属性
-        this.walk(value);
+        // console.log(value);
+        if(Array.isArray(value)){
+            // 我希望调用 pop shift unshift push reverse sort splice 时，先做自己想做的事，再进行调用
+            // 函数劫持、切片编程
+            value.__proto__=arrayMethods
+        }else{
+            this.walk(value);
+        }
+        
     }
     walk(data){
         let keys=Object.keys(data); //获取对象的key
@@ -16,9 +25,11 @@ function defineReactive(data,key,value){
     Object.defineProperty(data,key,{
         get(){
             // console.log('用户获取值了',data,key,value);
+            console.log('取值')
             return value
         },
         set(newValue){
+            console.log('设置值')
             // console.log('用户设定值了',data,key,value)
             if(newValue==value) return;
             observer(newValue)  //如果用户将值改为对象继续监控
