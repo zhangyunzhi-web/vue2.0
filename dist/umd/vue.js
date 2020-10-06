@@ -51,6 +51,10 @@
     arrayMethods[methods] = function () {
       console.log('数组方法被调用了');
       var result = oldArrayProtoMethods[methods].apply(this, arguments);
+
+      switch (method) {
+            }
+
       return result;
     };
   }); // arrayMethods.concat = function (){    // 没有重写的你可以沿着原型链找，他还是原来的
@@ -65,13 +69,22 @@
       if (Array.isArray(value)) {
         // 我希望调用 pop shift unshift push reverse sort splice 时，先做自己想做的事，再进行调用
         // 函数劫持、切片编程
-        value.__proto__ = arrayMethods;
+        value.__proto__ = arrayMethods; // 观测数组里面的对象类型，对象发生变化也要做一些事情
+
+        this.observerArray(value);
       } else {
         this.walk(value);
       }
     }
 
     _createClass(Observer, [{
+      key: "observerArray",
+      value: function observerArray(value) {
+        value.forEach(function (item) {
+          observer(item); //观测数组类型中的对象类型
+        });
+      }
+    }, {
       key: "walk",
       value: function walk(data) {
         var keys = Object.keys(data); //获取对象的key
